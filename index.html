@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="A3D Engineering, bureau d'études à Abidjan : conception d'usines, maquettes 3D, calculs électriques, MEP, gestion de projets EPC et gestion administrative.">
+<link rel="icon" href="logo.jpg">
+<title>A3D Engineering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Mise en page : bandeau marine type "plan d'usine" en ouverture, puis sections claires en grille, codes de discipline en étiquettes techniques */
+:root{
+  --bg:#F2F4F8; --surface:#FFFFFF; --ink:#0D1A2F; --muted:#4E5D77; --line:#D3DBE6;
+  --navy:#0B2A5B; --navy-ink:#FFFFFF; --accent:#D97F0F; --accent-ink:#FFFFFF;
+  --band:#0A1F42; --band-2:#0F2C5C; --band-ink:#E8EEF7; --band-muted:#9FB0CB; --band-line:#3A5689; --steel:#C3CEDD; --cad:#0A0E15; --ok:#3CCB7F;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"IBM Plex Sans","Segoe UI",Roboto,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --wrap:1160px; --r:6px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#09111F; --surface:#101B2D; --ink:#E5EBF4; --muted:#97A5BC; --line:#22314A;
+  --navy:#2F63B8; --navy-ink:#FFFFFF; --accent:#F0A13C; --accent-ink:#1A1206;
+  --band:#060D1A; --band-2:#0C1A33; --band-ink:#E5EBF4; --band-muted:#8E9FBB; --band-line:#2E4673; --steel:#9FB0C8;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#09111F; --surface:#101B2D; --ink:#E5EBF4; --muted:#97A5BC; --line:#22314A;
+  --navy:#2F63B8; --navy-ink:#FFFFFF; --accent:#F0A13C; --accent-ink:#1A1206;
+  --band:#060D1A; --band-2:#0C1A33; --band-ink:#E5EBF4; --band-muted:#8E9FBB; --band-line:#2E4673; --steel:#9FB0C8;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+a{color:inherit}
+.wrap{max-width:var(--wrap);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);line-height:1.05;text-wrap:balance;margin:0;letter-spacing:.01em}
+h2{font-size:clamp(2rem,4vw,2.9rem);font-weight:700;text-transform:uppercase}
+h3{font-size:1.45rem;font-weight:600}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:28px;height:2px;background:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+/* En-tête */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.head{display:flex;align-items:center;gap:24px;padding-block:10px}
+.logo{display:block;background:#fff;border-radius:4px;padding:4px 8px;flex:none}
+.logo img{display:block;height:52px;width:auto}
+nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+nav a{text-decoration:none;font-weight:500;font-size:.95rem;padding:8px 12px;border-radius:4px;color:var(--muted)}
+nav a:hover{color:var(--ink);background:var(--bg)}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:600;font-size:.95rem;text-decoration:none;padding:12px 20px;border-radius:4px;border:2px solid transparent;cursor:pointer;transition:transform .15s,background .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn-accent{background:var(--accent);color:var(--accent-ink)}
+.btn-ghost{border-color:var(--band-line);color:var(--band-ink);background:transparent}
+.btn-ghost:hover{border-color:var(--band-muted)}
+.head .btn{padding:9px 16px;flex:none}
+@media (max-width:1080px){
+  .head{flex-wrap:wrap;gap:8px 16px}
+  .head .btn{margin-left:auto}
+  nav{order:3;width:100%;margin-left:0;flex-wrap:nowrap;overflow-x:auto;gap:0;margin-inline:-8px}
+  nav a{white-space:nowrap}
+  .logo img{height:42px}
+}
+
+/* Bandeau d'ouverture */
+.hero{background:var(--band);color:var(--band-ink);position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--band-2) 1px,transparent 1px),linear-gradient(90deg,var(--band-2) 1px,transparent 1px);background-size:32px 32px;opacity:.9}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center;padding-block:64px 56px}
+.hero h1{font-size:clamp(2.6rem,5.6vw,4.4rem);font-weight:700;text-transform:uppercase;margin-top:18px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .lead{color:var(--band-muted);font-size:1.12rem;max-width:34em;margin-top:18px}
+.hero .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.plan{width:100%;height:auto;display:block;max-width:100%}
+.plan .ln{stroke:var(--steel);stroke-width:2;fill:none}
+.plan .thin{stroke-width:1;opacity:.55}
+.plan .dash{stroke-dasharray:4 4}
+.plan .fl{fill:var(--band-2);stroke:var(--steel);stroke-width:2}
+.plan .liq{fill:var(--accent);opacity:.32}
+.plan .roof{fill:var(--steel)}
+.plan .hub{fill:var(--steel)}
+.plan .flow{stroke:var(--accent);stroke-width:2.5;fill:none;stroke-dasharray:8 8;animation:flow 1.6s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-16}}
+.plan .imp{transform-box:view-box;transform-origin:420px 325px;animation:spin 1.1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.plan .flame{fill:var(--accent);transform-box:fill-box;transform-origin:50% 100%;animation:flick .45s ease-in-out infinite alternate}
+@keyframes flick{from{transform:scale(1,1)}to{transform:scale(.82,1.22)}}
+.plan .puff{fill:var(--band-muted);opacity:0;transform-box:fill-box;transform-origin:center;animation:puff 4.2s ease-out infinite}
+.plan .p2{animation-delay:1.4s}.plan .p3{animation-delay:2.8s}
+@keyframes puff{0%{transform:translate(0,0) scale(.5);opacity:.45}100%{transform:translate(16px,-50px) scale(2.2);opacity:0}}
+.plan .led{fill:var(--ok);animation:blink 2.4s steps(1) infinite}
+.plan .l2{animation-delay:.8s}.plan .l3{animation-delay:1.6s}
+@keyframes blink{50%{opacity:.25}}
+.plan text{font-family:var(--mono);font-size:11px;fill:var(--band-muted);text-anchor:middle}
+.plan .tag{fill:var(--band-ink);font-size:10px}
+.plan .bubble{fill:var(--band);stroke:var(--accent);stroke-width:1.6}
+.sectors{position:relative;border-top:1px solid var(--band-line)}
+.sectors .wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:0;padding-block:0}
+.sector{padding:16px 20px;display:flex;gap:16px;align-items:center}
+.st{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sector + .sector{padding-left:20px;border-left:1px solid var(--band-line)}
+.sector{text-decoration:none;color:inherit}
+.sector:hover b{color:var(--accent)}
+.sector b{font-family:var(--display);font-size:1.35rem;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.sector span{font-family:var(--mono);font-size:.75rem;color:var(--band-muted)}
+@media (max-width:860px){
+  .hero .wrap{grid-template-columns:1fr;padding-block:44px 40px}
+  .sectors .wrap{grid-template-columns:1fr}
+  .sector,.sector + .sector{padding:14px 16px;border-left:0}
+  .sector + .sector{border-top:1px solid var(--band-line)}
+}
+
+/* Sections */
+section.block{padding-block:84px;scroll-margin-top:72px}
+.sec-head{display:grid;grid-template-columns:1fr 1fr;gap:16px 48px;align-items:end;margin-bottom:44px}
+.sec-head h2{margin-top:12px}
+.sec-head p{color:var(--muted);max-width:36em}
+@media (max-width:760px){.sec-head{grid-template-columns:1fr}section.block{padding-block:60px}}
+
+.services{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.svc{background:var(--surface);padding:28px 26px 30px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.code{font-family:var(--mono);font-size:.78rem;font-weight:500;color:var(--navy);display:flex;justify-content:space-between;gap:8px}
+:root[data-theme="dark"] .code{color:var(--steel)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .code{color:var(--steel)}}
+.code i{font-style:normal;color:var(--accent)}
+.svc p{color:var(--muted);font-size:.96rem}
+.svc ul{margin:4px 0 0;padding:0;list-style:none;display:grid;gap:6px;font-size:.92rem}
+.svc li{display:flex;gap:10px}
+.svc li::before{content:"";flex:none;width:7px;height:7px;margin-top:.6em;border:2px solid var(--accent);border-radius:50%}
+@media (max-width:980px){.services{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:620px){.services{grid-template-columns:1fr}}
+.services.two{grid-template-columns:repeat(2,1fr)}
+.alt .svc{background:var(--bg)}
+.svc.wide{grid-column:1/-1}
+.svc.wide ul{grid-template-columns:repeat(2,1fr);gap:8px 32px}
+.svc.wide b{color:var(--ink);font-weight:600}
+.svc.m3d{display:grid;grid-template-columns:1fr 1.15fr;gap:0;padding:0}
+.svc.m3d img{display:block;width:100%;height:100%;min-height:300px;object-fit:cover;background:var(--cad)}
+.m3d-body{padding:28px 26px 30px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.svc.m3d ul{grid-template-columns:1fr}
+@media (max-width:760px){.svc.m3d{grid-template-columns:1fr}.svc.m3d img{min-height:0;aspect-ratio:4/3}}
+@media (max-width:760px){.svc.wide ul{grid-template-columns:1fr}}
+@media (max-width:760px){.services.two{grid-template-columns:1fr}}
+.path{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:40px;counter-reset:st}
+.path div{display:grid;gap:4px;padding-top:16px;border-top:2px solid var(--line);counter-increment:st}
+.path div::before{content:"0" counter(st);font-family:var(--mono);font-size:.78rem;color:var(--accent)}
+.path b{font-family:var(--display);font-size:1.25rem;text-transform:uppercase;font-weight:600}
+.path p{color:var(--muted);font-size:.92rem}
+@media (max-width:860px){.path{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:480px){.path{grid-template-columns:1fr}}
+
+.alt{background:var(--surface);border-block:1px solid var(--line)}
+.note{font-family:var(--mono);font-size:.8rem;color:var(--muted);background:var(--bg);border:1px dashed var(--line);padding:10px 14px;border-radius:4px;margin-bottom:24px}
+.projects{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.proj{border:1px solid var(--line);border-radius:var(--r);background:var(--bg);display:grid;grid-template-rows:auto 1fr;overflow:hidden;min-width:0}
+.proj .top{background:var(--band);color:var(--band-ink);padding:18px 22px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.proj .top span{font-family:var(--mono);font-size:.75rem;color:var(--band-muted)}
+.proj .pill{font-family:var(--mono);font-size:.72rem;background:var(--accent);color:var(--accent-ink);padding:3px 9px;border-radius:99px;white-space:nowrap}
+.proj .body{padding:22px;display:grid;gap:14px;align-content:start}
+.proj dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:0;font-size:.92rem}
+.proj dt{font-family:var(--mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding-top:2px}
+.proj dd{margin:0}
+@media (max-width:760px){.projects{grid-template-columns:1fr}}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.filters button{font:inherit;font-size:.9rem;font-weight:500;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:7px 16px;cursor:pointer}
+.filters button:hover{border-color:var(--muted)}
+.filters button.on{background:var(--navy);border-color:var(--navy);color:var(--navy-ink)}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.work{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);overflow:hidden;display:grid;grid-template-rows:auto 1fr;min-width:0}
+.work .media{background:var(--cad);position:relative}
+.work img,.work video{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;max-width:100%}
+.work .badge{position:absolute;left:12px;top:12px;font-family:var(--mono);font-size:.72rem;background:var(--accent);color:var(--accent-ink);padding:3px 9px;border-radius:99px}
+.work .body{padding:20px 22px 22px;display:grid;gap:10px;align-content:start}
+.work p{color:var(--muted);font-size:.94rem}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.chips span{font-family:var(--mono);font-size:.74rem;border:1px solid var(--line);background:var(--surface);padding:2px 8px;border-radius:4px}
+.work.feat{grid-column:1/-1;grid-template-columns:1.35fr 1fr;grid-template-rows:none}
+.work.feat img{aspect-ratio:auto;height:100%;min-height:320px}
+.work.feat .body{padding:32px;align-content:center}
+.work.feat h3{font-size:1.9rem}
+@media (max-width:980px){.gallery{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:760px){.gallery{grid-template-columns:1fr}.work.feat{grid-template-columns:1fr}.work.feat img{min-height:0;aspect-ratio:4/3}.work.feat .body{padding:22px}}
+
+.about{display:grid;grid-template-columns:1fr 1.1fr;gap:56px;align-items:start}
+.about .text{display:grid;gap:16px;color:var(--muted);max-width:36em}
+.about .text strong{color:var(--ink)}
+.std{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.std span{font-family:var(--mono);font-size:.8rem;border:1px solid var(--line);padding:4px 10px;border-radius:4px;color:var(--ink);background:var(--bg)}
+.epc{display:grid;gap:0;border-left:2px solid var(--line)}
+.step{position:relative;padding:0 0 28px 28px;display:grid;gap:6px}
+.step:last-child{padding-bottom:0}
+.step::before{content:attr(data-n);position:absolute;left:-17px;top:-2px;width:32px;height:32px;border-radius:50%;background:var(--navy);color:var(--navy-ink);font-family:var(--display);font-weight:700;font-size:1.1rem;display:grid;place-items:center}
+.step h3 span{color:var(--accent)}
+.step p{color:var(--muted);font-size:.95rem}
+.values{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:56px;padding-top:32px;border-top:1px solid var(--line)}
+.values div{display:grid;gap:6px}
+.values b{font-family:var(--display);font-size:1.3rem;text-transform:uppercase;font-weight:600}
+.values p{color:var(--muted);font-size:.94rem}
+@media (max-width:860px){.about{grid-template-columns:1fr;gap:40px}.values{grid-template-columns:1fr}}
+
+/* Illustrations industrielles */
+.ind{width:88px;height:59px;flex:none;display:block}
+.ind.big{width:150px;height:100px}
+.ind .s{stroke:var(--steel);stroke-width:1.6;fill:none;stroke-linejoin:round;stroke-linecap:round}
+.ind .f{fill:var(--band-2);stroke:var(--steel);stroke-width:1.6;stroke-linejoin:round}
+.ind .a{fill:var(--accent)}
+.ind .flow{stroke:var(--accent);stroke-width:1.8;fill:none;stroke-dasharray:4 4;animation:flow 1.2s linear infinite}
+.ind .belt{animation:belt 1.6s linear infinite}
+@keyframes belt{to{transform:translateX(18px)}}
+.ind .blade{transform-box:fill-box;transform-origin:center;animation:blade .7s ease-in-out infinite alternate}
+@keyframes blade{to{transform:scaleX(.15)}}
+.ind .bub{fill:var(--accent);opacity:0;transform-box:fill-box;transform-origin:center;animation:bub 2.4s ease-in infinite}
+.ind .smk{fill:var(--band-muted);opacity:0;transform-box:fill-box;transform-origin:center;animation:smk 3s ease-out infinite}
+.ind .d2{animation-delay:1.2s}.ind .d3{animation-delay:.6s}
+@keyframes bub{0%{transform:translateY(0);opacity:.9}100%{transform:translateY(-20px);opacity:0}}
+@keyframes smk{0%{transform:translate(0,0) scale(.6);opacity:.55}100%{transform:translate(5px,-13px) scale(1.8);opacity:0}}
+.ind .beam{transform-box:view-box;transform-origin:40px 35px;animation:nod 2.2s ease-in-out infinite alternate}
+@keyframes nod{from{transform:rotate(-10deg)}to{transform:rotate(10deg)}}
+.ind .fl{fill:var(--accent);transform-box:fill-box;transform-origin:50% 100%;animation:flick .45s ease-in-out infinite alternate}
+@media (max-width:860px){.ind{width:72px;height:48px}}
+
+/* Fonds animés des domaines */
+.sector,.scard{position:relative;overflow:hidden;isolation:isolate}
+.sector > :not(.bgv),.scard > :not(.bgv){position:relative;z-index:1}
+.bgv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:.34;pointer-events:none;max-width:none}
+.sector .bgv{opacity:.3}
+.sector::after,.scard::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(90deg,var(--band) 0%,transparent 75%)}
+.sector:hover .bgv{opacity:.5}
+.kb{animation:kb 20s ease-in-out infinite alternate;transform-origin:60% 50%}
+@keyframes kb{from{transform:scale(1)}to{transform:scale(1.18) translate(-3%,2%)}}
+
+/* Secteurs : bandeau sombre */
+.dark{background:var(--band);color:var(--band-ink)}
+.dark .sec-head p{color:var(--band-muted)}
+.sect{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.scard{border:1px solid var(--band-line);border-radius:var(--r);background:var(--band-2);padding:28px;display:grid;gap:14px;align-content:start;min-width:0}
+.scard.big{grid-column:1/-1}
+.scard .hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.scard h3{font-size:1.9rem;text-transform:uppercase}
+.scard .hd span{font-family:var(--mono);font-size:.78rem;color:var(--accent)}
+.scard > p{color:var(--band-muted);max-width:44em}
+.spec{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--band-line);border:1px solid var(--band-line);border-radius:4px;overflow:hidden;margin-top:6px}
+.spec div{background:var(--band);padding:18px 16px;display:grid;gap:6px;align-content:start;min-width:0}
+.spec b{font-family:var(--display);font-size:1.25rem;font-weight:600;line-height:1.1}
+.spec p{color:var(--band-muted);font-size:.88rem}
+.spec i{font-style:normal;font-family:var(--mono);font-size:.72rem;color:var(--accent)}
+@media (max-width:1000px){.spec{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:760px){.sect{grid-template-columns:1fr}.spec{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:460px){.spec{grid-template-columns:1fr}}
+
+/* Contact */
+.contact{display:grid;grid-template-columns:1fr 1.1fr;gap:40px;align-items:start}
+.cards{display:grid;gap:12px}
+.ccard{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;min-width:0}
+.ccard .k{font-family:var(--mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.ccard .v{font-weight:600;font-size:1.05rem;overflow-wrap:anywhere;user-select:all}
+.ccard > div{flex:1;min-width:0}
+.copy{flex:none;font-family:var(--body);font-size:.82rem;font-weight:600;background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:6px 12px;cursor:pointer}
+.copy:hover{border-color:var(--muted)}
+form{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:26px;display:grid;gap:14px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label{display:grid;gap:6px;font-size:.88rem;font-weight:500}
+input,select,textarea{font:inherit;font-size:.95rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px;width:100%}
+textarea{min-height:120px;resize:vertical}
+.out{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:14px;display:grid;gap:10px;font-size:.9rem}
+.out pre{white-space:pre-wrap;margin:0;font-family:var(--mono);font-size:.82rem;color:var(--ink)}
+@media (max-width:860px){.contact{grid-template-columns:1fr}}
+@media (max-width:520px){.row{grid-template-columns:1fr}}
+
+footer{background:var(--band);color:var(--band-muted);font-size:.88rem}
+footer .wrap{padding-block:28px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer b{color:var(--band-ink);font-family:var(--display);font-size:1.1rem;letter-spacing:.04em}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap head">
+    <a class="logo" href="#accueil" aria-label="A3D Engineering, accueil"><img src="logo.jpg" alt="A3D Engineering — Plant Design & EPC Project Management"></a>
+    <nav aria-label="Menu principal">
+      <a href="#accueil">Accueil</a>
+      <a href="#services">Services</a>
+      <a href="#secteurs">Secteurs</a>
+      <a href="#gestion-administrative">Gestion administrative</a>
+      <a href="#realisations">Réalisations</a>
+      <a href="#a-propos">À propos</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="btn btn-accent" href="#contact">Demander un devis</a>
+  </div>
+</header>
+
+<main>
+<section class="hero" id="accueil">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Bureau d'études · Abidjan, Côte d'Ivoire</div>
+      <h1>Conception d'usines et <em>projets EPC</em> clés en main</h1>
+      <p class="lead">Des solutions industrielles innovantes pour l'agroalimentaire, la chimie et le pétrole &amp; gaz : de l'étude au démarrage de votre installation.</p>
+      <div class="cta">
+        <a class="btn btn-accent" href="#services">Nos services</a>
+        <a class="btn btn-ghost" href="#contact">Parler de votre projet</a>
+      </div>
+    </div>
+    <svg class="plan" viewBox="0 0 600 380" role="img" aria-label="Schéma animé d'un site industriel : parc de quatre réservoirs dont un à toit flottant et une sphère, pompe, colonne de distillation et torchère">
+      <defs><clipPath id="sph"><circle cx="345" cy="205" r="37"/></clipPath></defs>
+      <line class="ln" x1="10" y1="340" x2="590" y2="340"/>
+      <!-- TK-101 : toit conique -->
+      <rect class="fl" x="30" y="180" width="80" height="120"/>
+      <rect class="liq" x="31" y="250" width="78" height="50"><animate attributeName="y" values="250;205;250" dur="9s" repeatCount="indefinite"/><animate attributeName="height" values="50;95;50" dur="9s" repeatCount="indefinite"/></rect>
+      <path class="ln thin" d="M30 210 H110 M30 240 H110 M30 270 H110"/>
+      <rect class="ln" x="30" y="180" width="80" height="120"/>
+      <path class="fl" d="M28 180 L70 160 L112 180 Z"/>
+      <text x="70" y="226" class="tag">TK-101</text><text x="70" y="290">API 650</text>
+      <!-- TK-102 : toit en dôme -->
+      <rect class="fl" x="125" y="200" width="70" height="100"/>
+      <rect class="liq" x="126" y="230" width="68" height="70"><animate attributeName="y" values="230;272;230" dur="7s" repeatCount="indefinite"/><animate attributeName="height" values="70;28;70" dur="7s" repeatCount="indefinite"/></rect>
+      <path class="ln thin" d="M125 233 H195 M125 266 H195"/>
+      <rect class="ln" x="125" y="200" width="70" height="100"/>
+      <path class="fl" d="M123 200 Q160 180 197 200 Z"/>
+      <text x="160" y="250" class="tag">TK-102</text>
+      <!-- TK-103 : toit flottant -->
+      <rect class="fl" x="210" y="190" width="80" height="110"/>
+      <rect class="liq" x="211" y="238" width="78" height="62"><animate attributeName="y" values="238;211;238" dur="11s" repeatCount="indefinite"/><animate attributeName="height" values="62;89;62" dur="11s" repeatCount="indefinite"/></rect>
+      <rect class="roof" x="212" y="232" width="76" height="6"><animate attributeName="y" values="232;205;232" dur="11s" repeatCount="indefinite"/></rect>
+      <path class="ln" d="M210 190 V300 H290 V190 M206 196 H294"/>
+      <text x="250" y="272" class="tag">TK-103</text><text x="250" y="290">Flottant</text>
+      <!-- Pieds des bacs -->
+      <rect class="fl" x="24" y="300" width="92" height="8"/><rect class="fl" x="119" y="300" width="82" height="8"/><rect class="fl" x="204" y="300" width="92" height="8"/>
+      <!-- TK-104 : sphère basse pression -->
+      <path class="ln" d="M318 228 V340 M372 228 V340 M331 239 V340 M359 239 V340"/>
+      <circle class="fl" cx="345" cy="205" r="37"/>
+      <rect class="liq" x="300" y="215" width="90" height="40" clip-path="url(#sph)"><animate attributeName="y" values="215;190;215" dur="13s" repeatCount="indefinite"/></rect>
+      <circle class="ln" cx="345" cy="205" r="37"/>
+      <line class="ln thin" x1="308" y1="205" x2="382" y2="205"/>
+      <text x="345" y="192" class="tag">TK-104</text><text x="345" y="224">API 620</text>
+      <!-- Collecteur vers la pompe -->
+      <path class="ln" d="M110 292 H118 V325 M195 292 H203 V325 M290 292 H298 V325 M345 242 V325 M118 325 H402"/>
+      <path class="flow" d="M118 325 H402"/>
+      <!-- Pompe P-201 -->
+      <rect class="fl" x="398" y="336" width="62" height="6"/>
+      <rect class="fl" x="438" y="314" width="22" height="22" rx="3"/>
+      <circle class="fl" cx="420" cy="325" r="17"/>
+      <g class="imp"><line class="ln" x1="420" y1="312" x2="420" y2="338"/><line class="ln" x1="409" y1="318" x2="431" y2="332"/><line class="ln" x1="409" y1="332" x2="431" y2="318"/></g>
+      <circle class="hub" cx="420" cy="325" r="3"/>
+      <text x="420" y="364" class="tag">P-201</text>
+      <!-- Refoulement vers la colonne -->
+      <path class="ln" d="M420 308 V292 H452 V250 H470"/>
+      <path class="flow" d="M420 308 V292 H452 V250 H470"/>
+      <path class="ln" d="M446 266 L458 276 L458 266 L446 276 Z"/>
+      <!-- Colonne C-301 -->
+      <rect class="ln" x="480" y="300" width="30" height="40"/>
+      <rect class="fl" x="470" y="70" width="50" height="230" rx="24"/>
+      <path class="ln thin" d="M470 120 H520 M470 160 H520 M470 200 H520 M470 240 H520"/>
+      <text x="495" y="146" class="tag">C-301</text>
+      <!-- Ligne de tête vers la torchère -->
+      <path class="ln" d="M495 70 V44 H566 V98"/>
+      <path class="flow" d="M495 70 V44 H566 V98"/>
+      <path class="ln" d="M566 340 V98 M556 340 L566 300 L576 340"/>
+      <path class="flame" d="M566 60 C556 72 558 84 566 92 C574 84 576 72 566 60 Z"/>
+      <circle class="puff" cx="566" cy="56" r="5"/><circle class="puff p2" cx="566" cy="56" r="5"/><circle class="puff p3" cx="566" cy="56" r="5"/>
+      <!-- Instruments -->
+      <line class="ln dash" x1="70" y1="160" x2="70" y2="132"/>
+      <circle class="bubble" cx="70" cy="116" r="16"/><text x="70" y="120" class="tag">LT</text><circle class="led" cx="82" cy="104" r="3"/>
+      <line class="ln dash" x1="250" y1="190" x2="250" y2="152"/>
+      <circle class="bubble" cx="250" cy="136" r="16"/><text x="250" y="140" class="tag">LT</text><circle class="led l2" cx="262" cy="124" r="3"/>
+      <line class="ln dash" x1="404" y1="314" x2="392" y2="290"/>
+      <circle class="bubble" cx="386" cy="276" r="16"/><text x="386" y="280" class="tag">PI</text><circle class="led l3" cx="398" cy="264" r="3"/>
+      <line class="ln dash" x1="520" y1="180" x2="530" y2="180"/>
+      <circle class="bubble" cx="544" cy="180" r="14"/><text x="544" y="184" class="tag">TT</text><circle class="led l2" cx="555" cy="169" r="3"/>
+    </svg>
+  </div>
+  <div class="sectors">
+    <div class="wrap">
+      <a class="sector" href="#secteurs"><video class="bgv" src="v-batterie.mp4" poster="v-batterie-poster.jpg" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video><svg class="ind" viewBox="0 0 120 80" aria-hidden="true"><defs><clipPath id="cb1"><rect x="76" y="52" width="42" height="20"/></clipPath></defs><line class="s" x1="2" y1="74" x2="118" y2="74"/><rect class="f" x="6" y="10" width="20" height="40" rx="3"/><path class="f" d="M6 50 L16 60 L26 50 Z"/><path class="s" d="M8 58 V74 M24 58 V74"/><path class="f" d="M32 74 V42 L46 34 V42 L60 34 V42 L74 34 V74 Z"/><rect class="f" x="64" y="18" width="6" height="17"/><path class="s" d="M38 52 H46 M52 52 H60 M38 62 H46 M52 62 H60"/><circle class="smk" cx="67" cy="14" r="3"/><circle class="smk d2" cx="67" cy="14" r="3"/><line class="s" x1="74" y1="70" x2="118" y2="70"/><g clip-path="url(#cb1)"><g class="belt"><rect class="a" x="60" y="61" width="6" height="9" rx="1"/><rect class="a" x="61.5" y="57" width="3" height="4"/><rect class="a" x="78" y="61" width="6" height="9" rx="1"/><rect class="a" x="79.5" y="57" width="3" height="4"/><rect class="a" x="96" y="61" width="6" height="9" rx="1"/><rect class="a" x="97.5" y="57" width="3" height="4"/><rect class="a" x="114" y="61" width="6" height="9" rx="1"/><rect class="a" x="115.5" y="57" width="3" height="4"/></g></g></svg><div class="st"><b>Agroalimentaire</b><span>Food</span></div></a>
+      <a class="sector" href="#secteurs"><video class="bgv" src="v-procede.mp4" poster="v-procede-poster.jpg" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video><svg class="ind" viewBox="0 0 120 80" aria-hidden="true"><line class="s" x1="2" y1="74" x2="118" y2="74"/><path class="s" d="M16 64 V74 M42 64 V74"/><rect class="f" x="10" y="26" width="38" height="40" rx="12"/><rect class="f" x="24" y="12" width="10" height="10" rx="1"/><path class="s" d="M29 22 V57"/><line class="s blade" x1="19" y1="57" x2="39" y2="57"/><circle class="bub" cx="20" cy="52" r="1.8"/><circle class="bub d2" cx="37" cy="50" r="1.8"/><circle class="bub d3" cx="27" cy="54" r="1.5"/><path class="s" d="M48 46 H62 V60 H70"/><path class="flow" d="M48 46 H62 V60 H70"/><rect class="f" x="70" y="8" width="18" height="66" rx="9"/><path class="s" d="M70 26 H88 M70 40 H88 M70 54 H88"/><path class="s" d="M79 8 V4 H105 V44"/><path class="flow" d="M79 8 V4 H105 V44"/><rect class="f" x="96" y="44" width="18" height="30" rx="3"/></svg><div class="st"><b>Chimie</b><span>Chemical</span></div></a>
+      <a class="sector" href="#secteurs"><img class="bgv kb" src="real-usine.jpg" alt="" aria-hidden="true"><svg class="ind" viewBox="0 0 120 80" aria-hidden="true"><line class="s" x1="2" y1="74" x2="118" y2="74"/><path class="s" d="M30 74 L40 35 L50 74 M10 74 H66"/><circle class="f" cx="18" cy="58" r="6"/><path class="s" d="M64 46 V74 M60 70 H68"/><g class="beam"><path class="f" d="M12 33 H62 V37 H12 Z"/><path class="f" d="M60 27 Q70 35 60 43 Z"/></g><circle class="a" cx="40" cy="35" r="2"/><rect class="f" x="74" y="46" width="26" height="28"/><path class="f" d="M72 46 L87 38 L102 46 Z"/><path class="s" d="M110 74 V22 M106 74 L110 56 L114 74"/><path class="fl" d="M110 8 C105 13 106 18 110 21 C114 18 115 13 110 8 Z"/></svg><div class="st"><b>Pétrole &amp; Gaz</b><span>Oil &amp; Gas</span></div></a>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="services">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Nos services</div>
+        <h2>Neuf disciplines, une seule équipe</h2>
+      </div>
+      <p>Nous réunissons toutes les spécialités d'un projet industriel sous un même toit, pour des études cohérentes et un chantier sans mauvaises surprises.</p>
+    </div>
+    <div class="services">
+      <article class="svc">
+        <div class="code">MEC <i>01</i></div>
+        <h3>Mécanique &amp; utilités industrielles</h3>
+        <p>Équipements de procédé et réseaux d'utilités : vapeur, air comprimé, eau, froid.</p>
+        <ul><li>Dimensionnement des équipements</li><li>Bilans et réseaux d'utilités</li><li>Spécifications techniques</li></ul>
+      </article>
+      <article class="svc">
+        <div class="code">STR <i>02</i></div>
+        <h3>Charpente métallique</h3>
+        <p>Calcul et plans des structures acier : racks de tuyauterie, plateformes, bâtiments industriels.</p>
+        <ul><li>Notes de calcul</li><li>Plans d'ensemble et de détail</li><li>Escaliers, passerelles, supports</li></ul>
+      </article>
+      <article class="svc">
+        <div class="code">TNK <i>03</i></div>
+        <h3>Réservoirs de stockage</h3>
+        <p>Réservoirs atmosphériques et basse pression selon les codes API 650 et API 620.</p>
+        <ul><li>Calcul des viroles, toits et fonds</li><li>Plans de fabrication</li><li>Équipements et accessoires</li></ul>
+      </article>
+      <article class="svc">
+        <div class="code">PIP <i>04</i></div>
+        <h3>Tuyauterie &amp; pompage</h3>
+        <p>Tracés de tuyauterie, choix des pompes et calculs hydrauliques de vos réseaux.</p>
+        <ul><li>Schémas de procédé (P&amp;ID)</li><li>Isométriques et nomenclatures</li><li>Calculs de pertes de charge</li></ul>
+      </article>
+      <article class="svc">
+        <div class="code">CIV <i>05</i></div>
+        <h3>Génie civil &amp; infrastructures</h3>
+        <p>Fondations, dalles, cuvettes de rétention, voiries et réseaux du site.</p>
+        <ul><li>Fondations d'équipements</li><li>Plans de masse et VRD</li><li>Bâtiments techniques</li></ul>
+      </article>
+      <article class="svc">
+        <div class="code">HSE <i>06</i></div>
+        <h3>Incendie &amp; sécurité</h3>
+        <p>Protection incendie des installations et des stockages, en lien avec les exigences de sécurité.</p>
+        <ul><li>Réseaux d'eau incendie</li><li>Systèmes mousse et sprinklers</li><li>Plans de sécurité du site</li></ul>
+      </article>
+      <article class="svc wide m3d">
+        <img src="real-usine.jpg" alt="Maquette 3D d'une usine avec ses tuyauteries, structures et réservoirs" loading="lazy">
+        <div class="m3d-body">
+          <div class="code">3D <i>07</i></div>
+          <h3>Maquette 3D d'usine &amp; tuyauterie 3D</h3>
+          <p>Nous modélisons votre usine en 3D avant sa construction. Vous voyez l'installation complète, vous la validez plus facilement, et les erreurs sont corrigées sur l'écran plutôt que sur le chantier.</p>
+          <ul><li><span><b>Maquette 3D d'usine</b> : implantation du site, bâtiments, équipements et structures</span></li><li><span><b>Schéma 3D de tuyauterie</b> : tracé des lignes, vannes, supports et raccordements</span></li><li><span><b>Détection des conflits</b> : repérage des croisements entre tuyauterie, charpente et équipements</span></li><li><span><b>Plans et isométriques</b> : plans et nomenclatures tirés directement de la maquette</span></li><li><span><b>Vidéos de présentation</b> : visites 3D pour vos clients, partenaires et investisseurs</span></li></ul>
+        </div>
+      </article>
+      <article class="svc wide">
+        <div class="code">ELEC <i>08</i></div>
+        <h3>Calculs électriques</h3>
+        <p>Nous dimensionnons les installations électriques de vos usines et bâtiments, pour une alimentation fiable, sûre et conforme aux normes.</p>
+        <ul><li><span><b>Bilan de puissance</b> : puissance installée et appelée, choix du transformateur et des groupes électrogènes</span></li><li><span><b>Dimensionnement des câbles</b> : sections, chutes de tension et modes de pose</span></li><li><span><b>Courants de court-circuit</b> : calcul des courants de défaut et choix des protections</span></li><li><span><b>Sélectivité des protections</b> : coordination des disjoncteurs pour isoler seulement la zone en défaut</span></li><li><span><b>Mise à la terre et paratonnerre</b> : réseau de terre et protection contre la foudre</span></li><li><span><b>Éclairage</b> : niveaux d'éclairement des ateliers, bureaux et zones extérieures</span></li></ul>
+      </article>
+      <article class="svc wide">
+        <div class="code">MEP <i>09</i></div>
+        <h3>MEP &amp; bâtiments intelligents</h3>
+        <p>Conception de tous les lots techniques de vos bâtiments, avec des systèmes connectés qui pilotent le confort, la sécurité et la consommation d'énergie.</p>
+        <ul><li><span><b>Climatisation et ventilation (CVC)</b> : bilans thermiques, choix des équipements, réseaux de gaines</span></li><li><span><b>Électricité</b> : distribution, éclairage, locaux électriques, courants faibles</span></li><li><span><b>Plomberie et sanitaires</b> : eau froide, eau chaude, évacuations et eaux pluviales</span></li><li><span><b>Gestion technique du bâtiment (GTB)</b> : supervision centralisée de la climatisation, de l'éclairage et des équipements</span></li><li><span><b>Sûreté et accès</b> : contrôle d'accès, vidéosurveillance, détection incendie</span></li><li><span><b>Économies d'énergie</b> : capteurs, comptage et pilotage automatique des consommations</span></li></ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="block dark" id="secteurs">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Nos secteurs</div>
+        <h2>Les industries que nous accompagnons</h2>
+      </div>
+      <p>Nous connaissons les procédés, les équipements et les contraintes propres à chaque industrie. Nos études partent de votre produit pour concevoir l'installation qui lui convient.</p>
+    </div>
+    <div class="sect">
+      <article class="scard big">
+        <video class="bgv" src="v-batterie.mp4" poster="v-batterie-poster.jpg" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video>
+        <svg class="ind big" viewBox="0 0 120 80" aria-hidden="true"><defs><clipPath id="cb2"><rect x="76" y="52" width="42" height="20"/></clipPath></defs><line class="s" x1="2" y1="74" x2="118" y2="74"/><rect class="f" x="6" y="10" width="20" height="40" rx="3"/><path class="f" d="M6 50 L16 60 L26 50 Z"/><path class="s" d="M8 58 V74 M24 58 V74"/><path class="f" d="M32 74 V42 L46 34 V42 L60 34 V42 L74 34 V74 Z"/><rect class="f" x="64" y="18" width="6" height="17"/><path class="s" d="M38 52 H46 M52 52 H60 M38 62 H46 M52 62 H60"/><circle class="smk" cx="67" cy="14" r="3"/><circle class="smk d2" cx="67" cy="14" r="3"/><line class="s" x1="74" y1="70" x2="118" y2="70"/><g clip-path="url(#cb2)"><g class="belt"><rect class="a" x="60" y="61" width="6" height="9" rx="1"/><rect class="a" x="61.5" y="57" width="3" height="4"/><rect class="a" x="78" y="61" width="6" height="9" rx="1"/><rect class="a" x="79.5" y="57" width="3" height="4"/><rect class="a" x="96" y="61" width="6" height="9" rx="1"/><rect class="a" x="97.5" y="57" width="3" height="4"/><rect class="a" x="114" y="61" width="6" height="9" rx="1"/><rect class="a" x="115.5" y="57" width="3" height="4"/></g></g></svg>
+        <div class="hd"><h3>Agroalimentaire</h3><span>FOOD</span></div>
+        <p>Des usines de production alimentaire et de produits d'hygiène : préparation, transformation, stockage et utilités.</p>
+        <div class="spec">
+          <div><i>01</i><b>Sucrerie et boissons gazeuses (CSD)</b><p>Préparation des sirops, traitement d'eau, carbonatation et utilités de production.</p></div>
+          <div><i>02</i><b>Mayonnaise et ketchup</b><p>Cuves de préparation et de mélange, émulsion, cuisson, stockage et transfert.</p></div>
+          <div><i>03</i><b>Raffinerie d'huile</b><p>Neutralisation, décoloration, désodorisation et stockage des huiles brutes et raffinées.</p></div>
+          <div><i>04</i><b>Savon liquide</b><p>Dosage des matières premières, cuves de mélange, stockage et transfert vers le conditionnement.</p></div>
+          <div><i>05</i><b>Détergents</b><p>Unités de fabrication, silos de matières premières, dosage, mélange et stockage.</p></div>
+        </div>
+      </article>
+      <article class="scard">
+        <video class="bgv" src="v-procede.mp4" poster="v-procede-poster.jpg" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video>
+        <svg class="ind big" viewBox="0 0 120 80" aria-hidden="true"><line class="s" x1="2" y1="74" x2="118" y2="74"/><path class="s" d="M16 64 V74 M42 64 V74"/><rect class="f" x="10" y="26" width="38" height="40" rx="12"/><rect class="f" x="24" y="12" width="10" height="10" rx="1"/><path class="s" d="M29 22 V57"/><line class="s blade" x1="19" y1="57" x2="39" y2="57"/><circle class="bub" cx="20" cy="52" r="1.8"/><circle class="bub d2" cx="37" cy="50" r="1.8"/><circle class="bub d3" cx="27" cy="54" r="1.5"/><path class="s" d="M48 46 H62 V60 H70"/><path class="flow" d="M48 46 H62 V60 H70"/><rect class="f" x="70" y="8" width="18" height="66" rx="9"/><path class="s" d="M70 26 H88 M70 40 H88 M70 54 H88"/><path class="s" d="M79 8 V4 H105 V44"/><path class="flow" d="M79 8 V4 H105 V44"/><rect class="f" x="96" y="44" width="18" height="30" rx="3"/></svg>
+        <div class="hd"><h3>Chimie</h3><span>CHEMICAL</span></div>
+        <p>Unités de procédé chimique, stockage et transfert de produits chimiques, sécurité des installations.</p>
+      </article>
+      <article class="scard">
+        <img class="bgv kb" src="real-usine.jpg" alt="" aria-hidden="true">
+        <svg class="ind big" viewBox="0 0 120 80" aria-hidden="true"><line class="s" x1="2" y1="74" x2="118" y2="74"/><path class="s" d="M30 74 L40 35 L50 74 M10 74 H66"/><circle class="f" cx="18" cy="58" r="6"/><path class="s" d="M64 46 V74 M60 70 H68"/><g class="beam"><path class="f" d="M12 33 H62 V37 H12 Z"/><path class="f" d="M60 27 Q70 35 60 43 Z"/></g><circle class="a" cx="40" cy="35" r="2"/><rect class="f" x="74" y="46" width="26" height="28"/><path class="f" d="M72 46 L87 38 L102 46 Z"/><path class="s" d="M110 74 V22 M106 74 L110 56 L114 74"/><path class="fl" d="M110 8 C105 13 106 18 110 21 C114 18 115 13 110 8 Z"/></svg>
+        <div class="hd"><h3>Pétrole &amp; Gaz</h3><span>OIL &amp; GAS</span></div>
+        <p>Dépôts d'hydrocarbures, parcs de réservoirs, pomperies, tuyauteries et protection incendie.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="block alt" id="gestion-administrative">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Gestion administrative</div>
+        <h2>Vos dossiers, du projet à l'autorisation</h2>
+      </div>
+      <p>Un projet industriel ne se limite pas aux plans. Nous vous accompagnons aussi dans le montage du projet et préparons les documents et dossiers dont vous avez besoin pour le financer, le déclarer et le faire autoriser.</p>
+    </div>
+    <div class="services two">
+      <article class="svc">
+        <div class="code">DOC <i>01</i></div>
+        <h3>Rédaction des documents de projet</h3>
+        <p>Tous les documents qui décrivent et encadrent votre projet, rédigés clairement et prêts à être transmis.</p>
+        <ul><li>Cahiers des charges et notes de présentation</li><li>Notes techniques et comptes rendus</li><li>Dossiers d'appel d'offres et rapports d'avancement</li></ul>
+      </article>
+      <article class="svc">
+        <div class="code">BP <i>02</i></div>
+        <h3>Business plan</h3>
+        <p>Un business plan solide pour convaincre les banques, les investisseurs et les partenaires.</p>
+        <ul><li>Étude de marché et présentation du projet</li><li>Coût d'investissement et coûts d'exploitation</li><li>Plan de financement et rentabilité</li></ul>
+      </article>
+      <article class="svc">
+        <div class="code">CEPICI <i>03</i></div>
+        <h3>Accompagnement au montage du dossier CEPICI</h3>
+        <p>Nous vous aidons à constituer et déposer votre dossier auprès du Centre de Promotion des Investissements en Côte d'Ivoire.</p>
+        <ul><li>Liste et préparation des pièces à fournir</li><li>Volet technique et financier du dossier</li><li>Suivi du dossier jusqu'à la décision</li></ul>
+      </article>
+      <article class="svc">
+        <div class="code">AUT <i>04</i></div>
+        <h3>Dossier de demande d'autorisation au ministère</h3>
+        <p>Montage du dossier de demande d'autorisation auprès du ministère concerné par votre activité.</p>
+        <ul><li>Descriptif technique de l'installation et plans</li><li>Pièces administratives du dossier</li><li>Dépôt et suivi auprès du ministère</li></ul>
+      </article>
+      <article class="svc wide">
+        <div class="code">PROJET <i>05</i></div>
+        <h3>Accompagnement au montage de projet</h3>
+        <p>Nous vous aidons à poser les bases de votre projet avant les études détaillées : vérifier qu'il est réalisable, fixer les données de conception et trouver les bons fournisseurs.</p>
+        <ul><li><span><b>Étude de faisabilité</b> : faisabilité technique et économique du projet</span></li><li><span><b>Basis of Design (BOD)</b> : données de base, hypothèses et critères de conception</span></li><li><span><b>Plans de base</b> : implantation générale, schémas de principe, premiers plans</span></li><li><span><b>Recherche de fournisseurs</b> : consultation, comparaison des offres, choix des équipements</span></li></ul>
+      </article>
+    </div>
+    <div class="path">
+      <div><b>Analyse</b><p>Nous étudions votre projet et listons les documents nécessaires.</p></div>
+      <div><b>Rédaction</b><p>Nous préparons les documents et rassemblons les pièces.</p></div>
+      <div><b>Dépôt</b><p>Nous déposons les dossiers auprès des organismes concernés.</p></div>
+      <div><b>Suivi</b><p>Nous suivons chaque dossier jusqu'à la réponse finale.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="realisations">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Réalisations</div>
+        <h2>Nos projets</h2>
+      </div>
+      <p>Quelques projets étudiés par notre bureau, modélisés en 3D avant leur construction.</p>
+    </div>
+    <div class="filters" role="group" aria-label="Filtrer les réalisations">
+      <button type="button" class="on" data-f="tous">Tous</button>
+      <button type="button" data-f="procedes">Usines et procédés</button>
+      <button type="button" data-f="stockage">Stockage</button>
+      <button type="button" data-f="utilites">Utilités et énergie</button>
+      <button type="button" data-f="batiments">Bâtiments</button>
+    </div>
+    <div class="gallery">
+      <article class="work feat" data-cat="procedes">
+        <div class="media"><img src="real-usine.jpg" alt="Maquette 3D d'une usine : unité de procédé, racks de tuyauterie, structures et parcs de réservoirs" loading="lazy"><span class="badge">Modélisation 3D</span></div>
+        <div class="body">
+          <div class="code">PLANT DESIGN</div>
+          <h3>Usine de procédé et parcs de stockage</h3>
+          <p>Implantation complète d'un site industriel en 3D : unité de procédé, racks de tuyauterie, structures métalliques, parcs de réservoirs, voiries et zones de chargement des camions.</p>
+          <div class="chips"><span>PIP</span><span>STR</span><span>TNK</span><span>CIV</span><span>HSE</span></div>
+        </div>
+      </article>
+      <article class="work" data-cat="procedes">
+        <div class="media"><img src="real-silos.jpg" alt="Maquette 3D d'une centrale avec silos, convoyeur à bande et hangar" loading="lazy"><span class="badge">Modélisation 3D</span></div>
+        <div class="body"><h3>Centrale de production avec silos</h3><p>Plan d'ensemble du site : silos de stockage, convoyeur à bande, trémies d'alimentation et hangar, dans les limites du terrain.</p><div class="chips"><span>STR</span><span>MEC</span><span>CIV</span></div></div>
+      </article>
+      <article class="work" data-cat="procedes">
+        <div class="media"><img src="real-dosage.jpg" alt="Maquette 3D d'un silo avec vis de transfert, malaxeur sur plateforme et trémie" loading="lazy"><span class="badge">Modélisation 3D</span></div>
+        <div class="body"><h3>Silo et poste de dosage</h3><p>Silo sur charpente, vis de transfert, malaxeur installé sur plateforme et trémie de chargement.</p><div class="chips"><span>MEC</span><span>STR</span></div></div>
+      </article>
+      <article class="work" data-cat="procedes">
+        <div class="media"><video src="v-procede.mp4" poster="v-procede-poster.jpg" muted loop playsinline controls preload="none" aria-label="Vidéo 3D : Unité de procédé sur charpente"></video><span class="badge">Vidéo 3D</span></div>
+        <div class="body"><h3>Unité de procédé sur charpente</h3><p>Équipements de procédé répartis sur plusieurs niveaux d'une structure acier, avec escaliers, passerelles et garde-corps.</p><div class="chips"><span>STR</span><span>MEC</span></div></div>
+      </article>
+      <article class="work" data-cat="stockage">
+        <div class="media"><video src="v-batterie.mp4" poster="v-batterie-poster.jpg" muted loop playsinline controls preload="none" aria-label="Vidéo 3D : Batterie de réservoirs verticaux"></video><span class="badge">Vidéo 3D</span></div>
+        <div class="body"><h3>Batterie de réservoirs verticaux</h3><p>Quatre réservoirs verticaux, leurs pompes et le réseau de tuyauterie qui les relie.</p><div class="chips"><span>TNK</span><span>PIP</span></div></div>
+      </article>
+      <article class="work" data-cat="stockage">
+        <div class="media"><video src="v-reservoir1.mp4" poster="v-reservoir1-poster.jpg" muted loop playsinline controls preload="none" aria-label="Vidéo 3D : Réservoir de stockage atmosphérique"></video><span class="badge">Vidéo 3D</span></div>
+        <div class="body"><h3>Réservoir de stockage atmosphérique</h3><p>Modèle d'un réservoir cylindrique vertical : viroles, toit et escalier hélicoïdal.</p><div class="chips"><span>TNK</span></div></div>
+      </article>
+      <article class="work" data-cat="stockage">
+        <div class="media"><video src="v-reservoir2.mp4" poster="v-reservoir2-poster.jpg" muted loop playsinline controls preload="none" aria-label="Vidéo 3D : Réservoir : viroles et fond"></video><span class="badge">Vidéo 3D</span></div>
+        <div class="body"><h3>Réservoir : viroles et fond</h3><p>Vue détaillée du découpage des tôles de viroles et du fond d'un réservoir de stockage.</p><div class="chips"><span>TNK</span></div></div>
+      </article>
+      <article class="work" data-cat="utilites">
+        <div class="media"><video src="real-tours.mp4" poster="real-tours-poster.jpg" muted loop playsinline controls preload="none" aria-label="Vidéo 3D : tours de refroidissement et pomperie"></video><span class="badge">Vidéo 3D</span></div>
+        <div class="body"><h3>Tours de refroidissement et pomperie</h3><p>Deux tours de refroidissement reliées à leurs pompes par un réseau de tuyauterie, modélisées en 3D.</p><div class="chips"><span>MEC</span><span>PIP</span></div></div>
+      </article>
+      <article class="work" data-cat="utilites">
+        <div class="media"><video src="v-groupes.mp4" poster="v-groupes-poster.jpg" muted loop playsinline controls preload="none" aria-label="Vidéo 3D : Groupes électrogènes et cuve de gasoil"></video><span class="badge">Vidéo 3D</span></div>
+        <div class="body"><h3>Groupes électrogènes et cuve de gasoil</h3><p>Salle des groupes électrogènes avec leur cuve de gasoil, la tuyauterie d'alimentation et les armoires électriques.</p><div class="chips"><span>MEC</span><span>PIP</span><span>ÉLEC</span></div></div>
+      </article>
+      <article class="work" data-cat="utilites">
+        <div class="media"><video src="v-pompage.mp4" poster="v-pompage-poster.jpg" muted loop playsinline controls preload="none" aria-label="Vidéo 3D : Château d'eau et station de pompage"></video><span class="badge">Vidéo 3D</span></div>
+        <div class="body"><h3>Château d'eau et station de pompage</h3><p>Pompes, vannes et réseaux de tuyauterie au pied d'un réservoir surélevé.</p><div class="chips"><span>PIP</span><span>STR</span></div></div>
+      </article>
+      <article class="work" data-cat="batiments">
+        <div class="media"><video src="v-salle-elec.mp4" poster="v-salle-elec-poster.jpg" muted loop playsinline controls preload="none" aria-label="Vidéo 3D : Salle électrique"></video><span class="badge">Vidéo 3D</span></div>
+        <div class="body"><h3>Salle électrique</h3><p>Bâtiment technique avec ses cellules et armoires électriques, caniveaux de câbles et accès.</p><div class="chips"><span>CIV</span><span>ÉLEC</span></div></div>
+      </article>
+      <article class="work" data-cat="batiments">
+        <div class="media"><video src="v-batiment.mp4" poster="v-batiment-poster.jpg" muted loop playsinline controls preload="none" aria-label="Vidéo 3D : Bâtiment résidentiel"></video><span class="badge">Vidéo 3D</span></div>
+        <div class="body"><h3>Bâtiment résidentiel</h3><p>Maison à étage modélisée pièce par pièce : murs, ouvertures, équipements et aménagements extérieurs.</p><div class="chips"><span>CIV</span></div></div>
+      </article>
+      <article class="work" data-cat="batiments">
+        <div class="media"><video src="v-amenagement.mp4" poster="v-amenagement-poster.jpg" muted loop playsinline controls preload="none" aria-label="Vidéo 3D : Aménagement d'un bâtiment"></video><span class="badge">Vidéo 3D</span></div>
+        <div class="body"><h3>Aménagement d'un bâtiment</h3><p>Plan 3D d'un bâtiment de plain-pied : cloisonnement des locaux, portes et équipements.</p><div class="chips"><span>CIV</span></div></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="block alt" id="a-propos">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">À propos</div>
+        <h2>Un bureau d'études ivoirien au service de l'industrie</h2>
+      </div>
+      <p>Basés à Abidjan, nous accompagnons les industriels de la région dans la conception, la construction et la modernisation de leurs installations.</p>
+    </div>
+    <div class="about">
+      <div class="text">
+        <p><strong>A3D Engineering</strong> est un bureau d'études spécialisé dans la conception d'usines (<em>plant design</em>) et la gestion de projets EPC : études, approvisionnement et construction.</p>
+        <p>Nos ingénieurs interviennent sur toute la vie d'un projet, des premières études jusqu'à la mise en service, en appliquant les codes et normes internationaux reconnus par l'industrie.</p>
+        <div class="std"><span>API 650</span><span>API 620</span><span>Codes internationaux</span></div>
+      </div>
+      <div class="epc">
+        <div class="step" data-n="E"><h3>Études <span>· Engineering</span></h3><p>Études de faisabilité, de base et de détail : plans, notes de calcul, spécifications.</p></div>
+        <div class="step" data-n="P"><h3>Approvisionnement <span>· Procurement</span></h3><p>Consultation des fournisseurs, analyse des offres et suivi des commandes d'équipements.</p></div>
+        <div class="step" data-n="C"><h3>Construction <span>· Construction</span></h3><p>Supervision du chantier, contrôle qualité et accompagnement jusqu'au démarrage.</p></div>
+      </div>
+    </div>
+    <div class="values">
+      <div><b>Rigueur</b><p>Des calculs vérifiés et des plans conformes aux normes en vigueur.</p></div>
+      <div><b>Sécurité</b><p>La sécurité des personnes et des installations guide chaque choix technique.</p></div>
+      <div><b>Proximité</b><p>Une équipe locale, disponible et réactive tout au long du projet.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="contact">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Contact</div>
+        <h2>Parlons de votre projet</h2>
+      </div>
+      <p>Décrivez votre besoin : nous revenons vers vous rapidement avec une première proposition.</p>
+    </div>
+    <div class="contact">
+      <div class="cards">
+        <div class="ccard"><div><div class="k">Téléphone</div><div class="v">+225 07 57 54 06 06</div></div><button class="copy" type="button" data-copy="+225 07 57 54 06 06">Copier</button></div>
+        <div class="ccard"><div><div class="k">E-mail</div><div class="v">info@a3dengineering.com</div></div><button class="copy" type="button" data-copy="info@a3dengineering.com">Copier</button></div>
+        <div class="ccard"><div><div class="k">Site web</div><div class="v">www.a3dengineering.com</div></div><button class="copy" type="button" data-copy="www.a3dengineering.com">Copier</button></div>
+        <div class="ccard"><div><div class="k">Adresse</div><div class="v">Abidjan, Côte d'Ivoire</div></div></div>
+      </div>
+      <form id="devis">
+        <div class="row">
+          <label for="f-nom">Nom et société<input id="f-nom" name="nom" required placeholder="Ex. : Kouassi Yao, Société ABC"></label>
+          <label for="f-tel">Téléphone<input id="f-tel" name="tel" placeholder="+225 …"></label>
+        </div>
+        <label for="f-type">Type de projet
+          <select id="f-type" name="type">
+            <option>Mécanique &amp; utilités industrielles</option><option>Réservoirs de stockage</option><option>Tuyauterie &amp; pompage</option><option>Charpente métallique</option><option>Génie civil</option><option>Incendie &amp; sécurité</option><option>Maquette 3D &amp; tuyauterie 3D</option><option>Calculs électriques</option><option>MEP &amp; bâtiments intelligents</option><option>Projet EPC complet</option><option>Documents de projet</option><option>Business plan</option><option>Dossier CEPICI</option><option>Autorisation ministère</option><option>Montage de projet</option><option>Autre</option>
+          </select>
+        </label>
+        <label for="f-msg">Votre besoin<textarea id="f-msg" name="msg" required placeholder="Décrivez votre projet : lieu, capacité, délais…"></textarea></label>
+        <button class="btn btn-accent" type="submit">Préparer ma demande</button>
+        <div class="out" id="out" hidden>
+          <span>Votre message est prêt. Copiez-le et envoyez-le à <b>info@a3dengineering.com</b>.</span>
+          <pre id="out-text"></pre>
+          <button class="copy" type="button" id="out-copy">Copier le message</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><b>A3D ENGINEERING</b> · Plant Design &amp; EPC Project Management</span>
+    <span>© <span id="yr">2026</span> · Abidjan, Côte d'Ivoire</span>
+  </div>
+</footer>
+
+<script>
+function copyText(t, btn){
+  const done=()=>{const o=btn.textContent;btn.textContent='Copié';setTimeout(()=>btn.textContent=o,1600)};
+  try{navigator.clipboard.writeText(t).then(done).catch(()=>sel(btn))}catch(e){sel(btn)}
+}
+function sel(btn){const v=btn.parentElement.querySelector('.v,pre');if(!v)return;const r=document.createRange();r.selectNodeContents(v);const s=getSelection();s.removeAllRanges();s.addRange(r);btn.textContent='Texte sélectionné'}
+document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',()=>copyText(b.dataset.copy,b)));
+document.getElementById('devis').addEventListener('submit',e=>{
+  e.preventDefault();
+  const f=e.target;
+  const txt=`Objet : Demande de devis — ${f.type.value}\n\nBonjour,\n\n${f.msg.value.trim()}\n\nNom / société : ${f.nom.value.trim()}${f.tel.value.trim()?`\nTéléphone : ${f.tel.value.trim()}`:''}\n\nCordialement.`;
+  document.getElementById('out-text').textContent=txt;
+  document.getElementById('out').hidden=false;
+});
+document.getElementById('out-copy').addEventListener('click',e=>copyText(document.getElementById('out-text').textContent,e.currentTarget));
+const fb=document.querySelectorAll('.filters button');
+fb.forEach(b=>b.addEventListener('click',()=>{fb.forEach(x=>x.classList.toggle('on',x===b));const f=b.dataset.f;document.querySelectorAll('.gallery .work').forEach(w=>{w.hidden=!(f==='tous'||w.dataset.cat===f)})}));
+let calm=false;try{calm=matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}
+if(calm){try{document.querySelector('.plan').pauseAnimations()}catch(e){}}
+if(!calm&&'IntersectionObserver' in window){const io=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;if(e.isIntersecting){const p=v.play();if(p)p.catch(()=>{})}else v.pause()}),{threshold:.35});document.querySelectorAll('video').forEach(v=>io.observe(v))}
+document.getElementById('yr').textContent=new Date().getFullYear();
+</script>
+
+</body>
+</html>
